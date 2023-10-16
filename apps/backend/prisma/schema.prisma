@@ -9,6 +9,7 @@ generator client {
 
 model User {
   createdAt DateTime @default(now())
+  email     String?
   firstName String?
   id        String   @id @default(cuid())
   lastName  String?
@@ -16,4 +17,11 @@ model User {
   roles     Json
   updatedAt DateTime @updatedAt
   username  String   @unique
+}
+
+model Subscription {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  name      String?
+  updatedAt DateTime @updatedAt
 }

@@ -18,85 +18,79 @@ import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import * as nestAccessControl from "nest-access-control";
 import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
-import { UserService } from "../user.service";
+import { SubscriptionService } from "../subscription.service";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
-import { UserCreateInput } from "./UserCreateInput";
-import { UserWhereInput } from "./UserWhereInput";
-import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
-import { UserFindManyArgs } from "./UserFindManyArgs";
-import { UserUpdateInput } from "./UserUpdateInput";
-import { User } from "./User";
+import { SubscriptionCreateInput } from "./SubscriptionCreateInput";
+import { SubscriptionWhereInput } from "./SubscriptionWhereInput";
+import { SubscriptionWhereUniqueInput } from "./SubscriptionWhereUniqueInput";
+import { SubscriptionFindManyArgs } from "./SubscriptionFindManyArgs";
+import { SubscriptionUpdateInput } from "./SubscriptionUpdateInput";
+import { Subscription } from "./Subscription";
 
 @swagger.ApiBearerAuth()
 @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
-export class UserControllerBase {
+export class SubscriptionControllerBase {
   constructor(
-    protected readonly service: UserService,
+    protected readonly service: SubscriptionService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
   @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Post()
-  @swagger.ApiCreatedResponse({ type: User })
+  @swagger.ApiCreatedResponse({ type: Subscription })
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Subscription",
     action: "create",
     possession: "any",
   })
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
-  async create(@common.Body() data: UserCreateInput): Promise<User> {
+  async create(
+    @common.Body() data: SubscriptionCreateInput
+  ): Promise<Subscription> {
     return await this.service.create({
       data: data,
       select: {
         createdAt: true,
-        email: true,
-        firstName: true,
         id: true,
-        lastName: true,
-        roles: true,
+        name: true,
         updatedAt: true,
-        username: true,
       },
     });
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
-  @swagger.ApiOkResponse({ type: [User] })
-  @ApiNestedQuery(UserFindManyArgs)
+  @swagger.ApiOkResponse({ type: [Subscription] })
+  @ApiNestedQuery(SubscriptionFindManyArgs)
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Subscription",
     action: "read",
     possession: "any",
   })
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
-  async findMany(@common.Req() request: Request): Promise<User[]> {
-    const args = plainToClass(UserFindManyArgs, request.query);
+  async findMany(@common.Req() request: Request): Promise<Subscription[]> {
+    const args = plainToClass(SubscriptionFindManyArgs, request.query);
     return this.service.findMany({
       ...args,
       select: {
         createdAt: true,
-        email: true,
-        firstName: true,
         id: true,
-        lastName: true,
-        roles: true,
+        name: true,
         updatedAt: true,
-        username: true,
       },
     });
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
-  @swagger.ApiOkResponse({ type: User })
+  @swagger.ApiOkResponse({ type: Subscription })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Subscription",
     action: "read",
     possession: "own",
   })
@@ -104,19 +98,15 @@ export class UserControllerBase {
     type: errors.ForbiddenException,
   })
   async findOne(
-    @common.Param() params: UserWhereUniqueInput
-  ): Promise<User | null> {
+    @common.Param() params: SubscriptionWhereUniqueInput
+  ): Promise<Subscription | null> {
     const result = await this.service.findOne({
       where: params,
       select: {
         createdAt: true,
-        email: true,
-        firstName: true,
         id: true,
-        lastName: true,
-        roles: true,
+        name: true,
         updatedAt: true,
-        username: true,
       },
     });
     if (result === null) {
@@ -129,10 +119,10 @@ export class UserControllerBase {
 
   @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
-  @swagger.ApiOkResponse({ type: User })
+  @swagger.ApiOkResponse({ type: Subscription })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Subscription",
     action: "update",
     possession: "any",
   })
@@ -140,22 +130,18 @@ export class UserControllerBase {
     type: errors.ForbiddenException,
   })
   async update(
-    @common.Param() params: UserWhereUniqueInput,
-    @common.Body() data: UserUpdateInput
-  ): Promise<User | null> {
+    @common.Param() params: SubscriptionWhereUniqueInput,
+    @common.Body() data: SubscriptionUpdateInput
+  ): Promise<Subscription | null> {
     try {
       return await this.service.update({
         where: params,
         data: data,
         select: {
           createdAt: true,
-          email: true,
-          firstName: true,
           id: true,
-          lastName: true,
-          roles: true,
+          name: true,
           updatedAt: true,
-          username: true,
         },
       });
     } catch (error) {
@@ -169,10 +155,10 @@ export class UserControllerBase {
   }
 
   @common.Delete("/:id")
-  @swagger.ApiOkResponse({ type: User })
+  @swagger.ApiOkResponse({ type: Subscription })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @nestAccessControl.UseRoles({
-    resource: "User",
+    resource: "Subscription",
     action: "delete",
     possession: "any",
   })
@@ -180,20 +166,16 @@ export class UserControllerBase {
     type: errors.ForbiddenException,
   })
   async delete(
-    @common.Param() params: UserWhereUniqueInput
-  ): Promise<User | null> {
+    @common.Param() params: SubscriptionWhereUniqueInput
+  ): Promise<Subscription | null> {
     try {
       return await this.service.delete({
         where: params,
         select: {
           createdAt: true,
-          email: true,
-          firstName: true,
           id: true,
-          lastName: true,
-          roles: true,
+          name: true,
           updatedAt: true,
-          username: true,
         },
       });
     } catch (error) {
